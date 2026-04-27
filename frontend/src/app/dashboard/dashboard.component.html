@@ -1,0 +1,141 @@
+<div class="app" [class.dark]="darkMode">
+  <app-sidebar [darkMode]="darkMode"></app-sidebar>
+
+  <main class="main">
+    <app-topbar
+      pageTitle="Dashboard"
+      pageSubtitle="Marketing & Réseaux Sociaux"
+      [darkMode]="darkMode"
+      [showFilters]="true"
+      [selectedPlatform]="selectedPlatform"
+      [selectedDays]="selectedDays"
+      (darkModeChange)="onDarkModeChange($event)"
+      (platformChange)="onPlatformChange($event)"
+      (daysChange)="onDaysChange($event)">
+    </app-topbar>
+
+    <div class="content">
+      <div *ngIf="loading" class="loading-state">
+        <div class="spinner"></div><p>Chargement des données...</p>
+      </div>
+      <div *ngIf="error && !loading" class="error-state">
+        <i class="fa-solid fa-triangle-exclamation error-icon"></i>
+        <p>Impossible de joindre l'API.</p>
+        <p class="error-sub">Vérifie que Django tourne sur <code>localhost:8000</code></p>
+        <button (click)="loadAll()" class="retry-btn"><i class="fa-solid fa-rotate-right"></i> Réessayer</button>
+      </div>
+
+      <ng-container *ngIf="!loading && !error">
+        <div class="kpi-grid" *ngIf="kpiData">
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background:rgba(99,102,241,0.12)"><i class="fa-solid fa-users" style="color:#6366f1"></i></div>
+            <div class="kpi-info"><span class="kpi-label">Followers Total</span><span class="kpi-value">{{ formatNumber(kpiData.totals.followers) }}</span></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background:rgba(244,63,94,0.12)"><i class="fa-solid fa-eye" style="color:#f43f5e"></i></div>
+            <div class="kpi-info"><span class="kpi-label">Impressions</span><span class="kpi-value">{{ formatNumber(kpiData.totals.impressions) }}</span></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background:rgba(16,185,129,0.12)"><i class="fa-solid fa-heart" style="color:#10b981"></i></div>
+            <div class="kpi-info"><span class="kpi-label">Engagement Moyen</span><span class="kpi-value">{{ kpiData.totals.avg_engagement }}%</span></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background:rgba(245,158,11,0.12)"><i class="fa-solid fa-satellite-dish" style="color:#f59e0b"></i></div>
+            <div class="kpi-info"><span class="kpi-label">Portée (Reach)</span><span class="kpi-value">{{ formatNumber(kpiData.totals.reach) }}</span></div>
+          </div>
+        </div>
+
+        <section class="section">
+          <h2 class="section-title"><i class="fa-solid fa-layer-group"></i> Performance par Plateforme</h2>
+          <div class="platform-grid" *ngIf="kpiData">
+            <div class="platform-card" *ngFor="let acc of kpiData.accounts" [style.border-top-color]="platformColor(acc.platform)">
+              <div class="platform-header">
+                <i [class]="platformIcon(acc.platform)" [style.color]="platformColor(acc.platform)" class="plat-icon"></i>
+                <div><div class="plat-name">{{ acc.platform | titlecase }}</div><div class="plat-user">{{ '@' + acc.username }}</div></div>
+                <span class="growth-badge" [class.positive]="acc.growth_rate >= 0">
+                  <i class="fa-solid" [class.fa-arrow-trend-up]="acc.growth_rate >= 0" [class.fa-arrow-trend-down]="acc.growth_rate < 0"></i>
+                  {{ acc.growth_rate | number:'1.1-1' }}%
+                </span>
+              </div>
+              <div class="plat-stats">
+                <div class="plat-stat"><span class="stat-v">{{ formatNumber(acc.total_followers) }}</span><span class="stat-l">Followers</span></div>
+                <div class="plat-stat"><span class="stat-v">{{ acc.avg_engagement }}%</span><span class="stat-l">Engagement</span></div>
+                <div class="plat-stat"><span class="stat-v">{{ formatNumber(acc.total_reach) }}</span><span class="stat-l">Reach</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="charts-row">
+          <div class="chart-card wide">
+            <h3 class="chart-title"><i class="fa-solid fa-chart-line"></i> Évolution des Followers</h3>
+            <canvas baseChart [data]="followersChart" [options]="chartOptions" type="line"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3 class="chart-title"><i class="fa-solid fa-chart-pie"></i> Répartition Plateformes</h3>
+            <canvas baseChart [data]="platformShareChart" [options]="doughnutOptions" type="doughnut"></canvas>
+          </div>
+        </div>
+
+        <div class="charts-row equal">
+          <div class="chart-card">
+            <h3 class="chart-title"><i class="fa-solid fa-fire"></i> Taux d'Engagement (%)</h3>
+            <canvas baseChart [data]="engagementChart" [options]="chartOptions" type="line"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3 class="chart-title"><i class="fa-solid fa-chart-bar"></i> Impressions vs Reach</h3>
+            <canvas baseChart [data]="impressionsChart" [options]="barOptions" type="bar"></canvas>
+          </div>
+        </div>
+
+        <section class="section">
+          <h2 class="section-title"><i class="fa-solid fa-trophy"></i> Top 5 Posts</h2>
+          <div class="top-posts">
+            <div class="top-post" *ngFor="let post of sortedTopPosts; let i = index">
+              <div class="rank" [class.gold]="i===0" [class.silver]="i===1" [class.bronze]="i===2">#{{ i+1 }}</div>
+              <i [class]="platformIcon(post.platform)" [style.color]="platformColor(post.platform)" style="font-size:20px;flex-shrink:0"></i>
+              <div class="post-body">
+                <p class="post-content">{{ post.content | slice:0:90 }}{{ post.content.length > 90 ? '...' : '' }}</p>
+                <div class="post-meta">
+                  <span><i class="fa-solid fa-heart"></i> {{ formatNumber(post.likes) }}</span>
+                  <span><i class="fa-solid fa-comment"></i> {{ post.comments }}</span>
+                  <span><i class="fa-solid fa-share"></i> {{ post.shares }}</span>
+                  <span class="eng-rate"><i class="fa-solid fa-fire"></i> {{ post.engagement_rate }}%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 class="section-title"><i class="fa-solid fa-table-list"></i> Tous les Posts</h2>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Plateforme</th><th>Contenu</th>
+                  <th class="sortable" (click)="sortPosts('published_at')">Date</th>
+                  <th class="sortable" (click)="sortPosts('likes')"><i class="fa-solid fa-heart"></i> Likes {{ sortField==='likes'?(sortAsc?'↑':'↓'):'' }}</th>
+                  <th class="sortable" (click)="sortPosts('reach')"><i class="fa-solid fa-eye"></i> Reach {{ sortField==='reach'?(sortAsc?'↑':'↓'):'' }}</th>
+                  <th class="sortable" (click)="sortPosts('engagement_rate')"><i class="fa-solid fa-fire"></i> Engagement {{ sortField==='engagement_rate'?(sortAsc?'↑':'↓'):'' }}</th>
+                  <th>Type</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let post of posts">
+                  <td><span class="plat-tag" [style.background]="platformColor(post.platform)+'22'" [style.color]="platformColor(post.platform)"><i [class]="platformIcon(post.platform)"></i> {{ post.platform | titlecase }}</span></td>
+                  <td class="content-cell">{{ post.content | slice:0:60 }}...</td>
+                  <td>{{ post.published_at | date:'dd/MM/yy' }}</td>
+                  <td>{{ formatNumber(post.likes) }}</td>
+                  <td>{{ formatNumber(post.reach) }}</td>
+                  <td><span class="eng-pill" [class.high]="post.engagement_rate > 5">{{ post.engagement_rate }}%</span></td>
+                  <td><span class="type-badge">{{ post.post_type }}</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </ng-container>
+    </div>
+  </main>
+</div>

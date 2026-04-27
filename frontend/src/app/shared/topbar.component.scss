@@ -1,0 +1,88 @@
+$accent: #6366f1;
+$light-surface: #fff;
+$light-surface2: #f1f5f9;
+$light-border: rgba(0,0,0,0.08);
+$light-text: #0f172a;
+$light-text3: #94a3b8;
+$dark-surface: #1a1d27;
+$dark-surface2: #232634;
+$dark-border: rgba(255,255,255,0.06);
+$dark-text: #f1f5f9;
+$dark-text3: #64748b;
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 28px;
+  background: $light-surface;
+  border-bottom: 1px solid $light-border;
+  flex-shrink: 0;
+  z-index: 100;
+  gap: 16px;
+  transition: background 0.3s, border-color 0.3s;
+
+  &.dark {
+    background: $dark-surface;
+    border-color: $dark-border;
+    .page-title { color: $dark-text; }
+    .page-sub { color: $dark-text3; }
+    .select-input { background: $dark-surface2; border-color: $dark-border; color: $dark-text; }
+    .select-icon { color: $dark-text3; }
+    .icon-btn, .theme-btn { background: $dark-surface2; border-color: $dark-border; color: $dark-text; }
+  }
+}
+
+.topbar-left {
+  display: flex; align-items: baseline; gap: 12px;
+  .page-title { font-size: 20px; font-weight: 700; color: $light-text; }
+  .page-sub { font-size: 13px; color: $light-text3; }
+}
+
+.topbar-right {
+  display: flex; align-items: center; gap: 10px;
+}
+
+.filter-group { display: flex; gap: 8px; }
+
+.select-wrap {
+  position: relative;
+  .select-icon {
+    position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+    font-size: 11px; color: $light-text3; pointer-events: none;
+  }
+}
+
+.select-input {
+  padding: 8px 12px 8px 28px;
+  border-radius: 8px;
+  border: 1px solid $light-border;
+  background: $light-surface2;
+  color: $light-text;
+  font-size: 13px;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
+  &:focus { border-color: $accent; }
+}
+
+.icon-btn, .theme-btn {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  border: 1px solid $light-border;
+  background: $light-surface2;
+  color: $light-text;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  transition: all 0.2s;
+  &:hover { transform: scale(1.08); border-color: $accent; color: $accent; }
+}
+
+.notif-dot {
+  position: absolute; top: 6px; right: 6px;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #f43f5e;
+  border: 2px solid $light-surface;
+}

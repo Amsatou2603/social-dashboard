@@ -1,0 +1,42 @@
+<header class="topbar" [class.dark]="darkMode">
+  <div class="topbar-left">
+    <h1 class="page-title">{{ pageTitle }}</h1>
+    <span class="page-sub" *ngIf="pageSubtitle">{{ pageSubtitle }}</span>
+  </div>
+
+  <div class="topbar-right">
+
+    <!-- Filtres plateforme + période -->
+    <div class="filter-group" *ngIf="showFilters">
+      <div class="select-wrap">
+        <i class="fa-solid fa-filter select-icon"></i>
+        <select [ngModel]="selectedPlatform" (ngModelChange)="onPlatformChange($event)" class="select-input">
+          <option *ngFor="let p of platforms" [value]="p.value">{{ p.label }}</option>
+        </select>
+      </div>
+      <div class="select-wrap">
+        <i class="fa-solid fa-calendar select-icon"></i>
+        <select [ngModel]="selectedDays" (ngModelChange)="onDaysChange($event)" class="select-input">
+          <option *ngFor="let d of dayOptions" [value]="d">{{ d }} jours</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Bouton notifications → redirige vers Paramètres > Notifications -->
+    <a
+      class="icon-btn"
+      routerLink="/parametres"
+      title="Notifications"
+      [queryParams]="{section: 'notifications'}"
+    >
+      <i class="fa-regular fa-bell"></i>
+      <span class="notif-dot"></span>
+    </a>
+
+    <!-- Toggle dark/light -->
+    <button class="theme-btn" (click)="toggleDark()" [title]="darkMode ? 'Mode clair' : 'Mode sombre'">
+      <i class="fa-solid" [class.fa-sun]="darkMode" [class.fa-moon]="!darkMode"></i>
+    </button>
+
+  </div>
+</header>

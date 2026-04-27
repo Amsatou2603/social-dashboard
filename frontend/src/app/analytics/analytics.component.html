@@ -1,0 +1,114 @@
+<div class="app" [class.dark]="darkMode">
+  <app-sidebar [darkMode]="darkMode"></app-sidebar>
+  <main class="main">
+    <app-topbar pageTitle="Analytics" pageSubtitle="Analyse détaillée des performances"
+      [darkMode]="darkMode" [showFilters]="true"
+      [selectedPlatform]="selectedPlatform" [selectedDays]="selectedDays"
+      (darkModeChange)="onDarkModeChange($event)"
+      (platformChange)="onPlatformChange($event)"
+      (daysChange)="onDaysChange($event)">
+    </app-topbar>
+
+    <div class="content">
+      <div *ngIf="loading" class="loading-state"><div class="spinner"></div><p>Chargement...</p></div>
+
+      <ng-container *ngIf="!loading">
+
+        <!-- MÉTRIQUES CLÉS -->
+        <div class="summary-grid">
+          <div class="summary-card" *ngFor="let m of summaryMetrics">
+            <div class="sum-icon" [style.background]="m.color + '18'">
+              <i class="fa-solid {{ m.icon }}" [style.color]="m.color"></i>
+            </div>
+            <div class="sum-body">
+              <div class="sum-value">{{ m.value }}</div>
+              <div class="sum-label">{{ m.label }}</div>
+              <div class="sum-plat" *ngIf="m.platform">
+                <i [class]="platformIcon(m.platform)" [style.color]="platformColor(m.platform)"></i>
+                {{ m.platform | titlecase }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ÉVOLUTION FOLLOWERS -->
+        <div class="an-card full">
+          <div class="an-card-header">
+            <h3><i class="fa-solid fa-chart-line"></i> Évolution des Followers</h3>
+            <span class="badge-period">{{ selectedDays }} jours</span>
+          </div>
+          <canvas baseChart [data]="followersChart" [options]="chartOptions" type="line"></canvas>
+        </div>
+
+        <!-- ENGAGEMENT + DOUGHNUT -->
+        <div class="an-row">
+          <div class="an-card">
+            <div class="an-card-header">
+              <h3><i class="fa-solid fa-fire"></i> Taux d'engagement</h3>
+            </div>
+            <canvas baseChart [data]="engagementChart" [options]="chartOptions" type="line"></canvas>
+          </div>
+          <div class="an-card">
+            <div class="an-card-header">
+              <h3><i class="fa-solid fa-chart-pie"></i> Part de followers</h3>
+            </div>
+            <canvas baseChart [data]="platformShareChart" [options]="doughnutOptions" type="doughnut"></canvas>
+          </div>
+        </div>
+
+        <!-- IMPRESSIONS VS REACH -->
+        <div class="an-card full">
+          <div class="an-card-header">
+            <h3><i class="fa-solid fa-chart-bar"></i> Impressions vs Portée par Plateforme</h3>
+          </div>
+          <canvas baseChart [data]="impressionsChart" [options]="barOptions" type="bar"></canvas>
+        </div>
+
+        <!-- TABLEAU COMPARATIF PLATEFORMES -->
+        <div class="an-card full" *ngIf="kpiData">
+          <div class="an-card-header">
+            <h3><i class="fa-solid fa-table"></i> Comparatif Plateformes</h3>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Plateforme</th>
+                  <th><i class="fa-solid fa-users"></i> Followers</th>
+                  <th><i class="fa-solid fa-eye"></i> Impressions</th>
+                  <th><i class="fa-solid fa-satellite-dish"></i> Reach</th>
+                  <th><i class="fa-solid fa-heart"></i> Likes</th>
+                  <th><i class="fa-solid fa-fire"></i> Engagement</th>
+                  <th><i class="fa-solid fa-arrow-trend-up"></i> Croissance</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let acc of kpiData.accounts">
+                  <td>
+                    <span class="plat-tag" [style.background]="platformColor(acc.platform)+'22'" [style.color]="platformColor(acc.platform)">
+                      <i [class]="platformIcon(acc.platform)"></i> {{ acc.platform | titlecase }}
+                    </span>
+                  </td>
+                  <td><strong>{{ fmt(acc.total_followers) }}</strong></td>
+                  <td>{{ fmt(acc.total_impressions) }}</td>
+                  <td>{{ fmt(acc.total_reach) }}</td>
+                  <td>{{ fmt(acc.total_likes) }}</td>
+                  <td>
+                    <span class="eng-pill" [class.high]="acc.avg_engagement > 5">{{ acc.avg_engagement }}%</span>
+                  </td>
+                  <td>
+                    <span class="growth-badge" [class.positive]="acc.growth_rate >= 0">
+                      <i class="fa-solid" [class.fa-arrow-trend-up]="acc.growth_rate >= 0" [class.fa-arrow-trend-down]="acc.growth_rate < 0"></i>
+                      {{ acc.growth_rate | number:'1.1-1' }}%
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </ng-container>
+    </div>
+  </main>
+</div>

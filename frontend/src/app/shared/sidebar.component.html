@@ -1,0 +1,59 @@
+<aside class="sidebar" [class.dark]="darkMode">
+  <div class="logo">
+    <i class="fa-solid fa-chart-pie logo-icon"></i>
+    <span class="logo-text">SocialMetrics</span>
+  </div>
+
+  <nav class="nav">
+    <a class="nav-item"
+       *ngFor="let item of navItems"
+       [routerLink]="item.route"
+       routerLinkActive="active"
+       [routerLinkActiveOptions]="{exact: item.route === '/'}">
+      <i class="fa-solid {{ item.icon }}"></i>
+      <span>{{ item.label }}</span>
+    </a>
+  </nav>
+
+  <!-- Plateformes -->
+  <div class="platform-section">
+    <div class="platform-label">Plateformes</div>
+    <div class="platform-list">
+      <div class="plat-row">
+        <i class="fa-brands fa-instagram" style="color:#E1306C"></i>
+        <span>Instagram</span>
+        <span class="plat-dot online"></span>
+      </div>
+      <div class="plat-row">
+        <i class="fa-brands fa-facebook" style="color:#1877F2"></i>
+        <span>Facebook</span>
+        <span class="plat-dot online"></span>
+      </div>
+      <div class="plat-row">
+        <i class="fa-brands fa-x-twitter" style="color:#000"></i>
+        <span>Twitter / X</span>
+        <span class="plat-dot online"></span>
+      </div>
+      <div class="plat-row">
+        <i class="fa-brands fa-linkedin" style="color:#0A66C2"></i>
+        <span>LinkedIn</span>
+        <span class="plat-dot online"></span>
+      </div>
+      <div class="plat-row">
+        <i class="fa-brands fa-tiktok" style="color:#010101"></i>
+        <span>TikTok</span>
+        <span class="plat-dot online"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="user-avatar">IS</div>
+      <div>
+        <div class="user-name">ISEP Diamniadio</div>
+        <div class="user-role">Administrateur</div>
+      </div>
+    </div>
+  </div>
+</aside>

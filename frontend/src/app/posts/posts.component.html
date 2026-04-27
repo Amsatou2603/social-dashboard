@@ -1,0 +1,131 @@
+<div class="app" [class.dark]="darkMode">
+  <app-sidebar [darkMode]="darkMode"></app-sidebar>
+  <main class="main">
+    <app-topbar pageTitle="Posts" pageSubtitle="Gestion et performance des publications"
+      [darkMode]="darkMode" [showFilters]="true"
+      [selectedPlatform]="selectedPlatform" [selectedDays]="selectedDays"
+      (darkModeChange)="onDarkModeChange($event)"
+      (platformChange)="onPlatformChange($event)"
+      (daysChange)="onDaysChange($event)">
+    </app-topbar>
+
+    <div class="content">
+      <div *ngIf="loading" class="loading-state"><div class="spinner"></div><p>Chargement...</p></div>
+
+      <ng-container *ngIf="!loading">
+
+        <!-- STATS RAPIDES -->
+        <div class="posts-stats">
+          <div class="pstat">
+            <i class="fa-solid fa-newspaper pstat-icon" style="color:#6366f1"></i>
+            <div><div class="pstat-val">{{ stats.total }}</div><div class="pstat-lbl">Publications</div></div>
+          </div>
+          <div class="pstat">
+            <i class="fa-solid fa-heart pstat-icon" style="color:#f43f5e"></i>
+            <div><div class="pstat-val">{{ fmt(stats.avgLikes) }}</div><div class="pstat-lbl">Likes moyens</div></div>
+          </div>
+          <div class="pstat">
+            <i class="fa-solid fa-fire pstat-icon" style="color:#f59e0b"></i>
+            <div><div class="pstat-val">{{ stats.avgEngagement }}%</div><div class="pstat-lbl">Engagement moyen</div></div>
+          </div>
+          <div class="pstat best">
+            <i class="fa-solid fa-trophy pstat-icon" style="color:#10b981"></i>
+            <div><div class="pstat-val" style="font-size:13px">Meilleur post</div><div class="pstat-lbl">{{ stats.bestPost }}</div></div>
+          </div>
+        </div>
+
+        <!-- FILTRES TYPE + VUE -->
+        <div class="posts-toolbar">
+          <div class="type-filters">
+            <button class="filter-btn" *ngFor="let t of types"
+              [class.active]="selectedType === t"
+              (click)="selectedType = t">
+              <i [class]="typeIcon(t)" *ngIf="t !== 'all'"></i>
+              <i class="fa-solid fa-layer-group" *ngIf="t === 'all'"></i>
+              {{ t | titlecase }}
+            </button>
+          </div>
+          <div class="view-toggle">
+            <button [class.active]="viewMode==='grid'" (click)="viewMode='grid'" title="Grille">
+              <i class="fa-solid fa-grip"></i>
+            </button>
+            <button [class.active]="viewMode==='table'" (click)="viewMode='table'" title="Tableau">
+              <i class="fa-solid fa-list"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- VUE GRILLE -->
+        <div class="posts-grid" *ngIf="viewMode === 'grid'">
+          <div class="post-card" *ngFor="let post of filteredPosts">
+            <div class="post-card-header">
+              <div class="post-plat-info">
+                <i [class]="platformIcon(post.platform)" [style.color]="platformColor(post.platform)" style="font-size:18px"></i>
+                <div>
+                  <div class="post-plat-name">{{ post.platform | titlecase }}</div>
+                  <div class="post-date">{{ post.published_at | date:'dd MMM yyyy' }}</div>
+                </div>
+              </div>
+              <span class="type-badge">
+                <i [class]="typeIcon(post.post_type)"></i> {{ post.post_type }}
+              </span>
+            </div>
+            <p class="post-text">{{ post.content }}</p>
+            <div class="post-metrics">
+              <div class="metric"><i class="fa-solid fa-heart"></i><span>{{ fmt(post.likes) }}</span></div>
+              <div class="metric"><i class="fa-solid fa-comment"></i><span>{{ post.comments }}</span></div>
+              <div class="metric"><i class="fa-solid fa-share-nodes"></i><span>{{ post.shares }}</span></div>
+              <div class="metric"><i class="fa-solid fa-eye"></i><span>{{ fmt(post.reach) }}</span></div>
+            </div>
+            <div class="post-eng-bar">
+              <div class="eng-label">
+                <span>Engagement</span>
+                <span class="eng-val" [class.high]="post.engagement_rate > 5">{{ post.engagement_rate }}%</span>
+              </div>
+              <div class="eng-bg">
+                <div class="eng-fill" [style.width]="(post.engagement_rate > 20 ? 20 : post.engagement_rate) * 5 + '%'"
+                     [style.background]="post.engagement_rate > 5 ? '#f43f5e' : '#6366f1'"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- VUE TABLEAU -->
+        <div class="table-wrap" *ngIf="viewMode === 'table'">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Plateforme</th><th>Contenu</th><th>Date</th>
+                <th><i class="fa-solid fa-heart"></i></th>
+                <th><i class="fa-solid fa-comment"></i></th>
+                <th><i class="fa-solid fa-share-nodes"></i></th>
+                <th><i class="fa-solid fa-eye"></i></th>
+                <th><i class="fa-solid fa-fire"></i> Eng.</th>
+                <th>Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let post of filteredPosts">
+                <td><span class="plat-tag" [style.background]="platformColor(post.platform)+'22'" [style.color]="platformColor(post.platform)"><i [class]="platformIcon(post.platform)"></i> {{ post.platform | titlecase }}</span></td>
+                <td class="content-cell">{{ post.content | slice:0:55 }}...</td>
+                <td>{{ post.published_at | date:'dd/MM/yy' }}</td>
+                <td>{{ fmt(post.likes) }}</td>
+                <td>{{ post.comments }}</td>
+                <td>{{ post.shares }}</td>
+                <td>{{ fmt(post.reach) }}</td>
+                <td><span class="eng-pill" [class.high]="post.engagement_rate > 5">{{ post.engagement_rate }}%</span></td>
+                <td><span class="type-badge"><i [class]="typeIcon(post.post_type)"></i></span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="empty-state" *ngIf="filteredPosts.length === 0">
+          <i class="fa-solid fa-inbox"></i>
+          <p>Aucun post de type "{{ selectedType }}" pour cette période.</p>
+        </div>
+
+      </ng-container>
+    </div>
+  </main>
+</div>

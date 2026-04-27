@@ -1,0 +1,158 @@
+$accent: #6366f1;
+$border: rgba(0,0,0,0.08);
+$surface: #fff;
+$surface2: #f1f5f9;
+$text2: #475569;
+$text3: #94a3b8;
+$dark-surface: #1a1d27;
+$dark-surface2: #232634;
+$dark-border: rgba(255,255,255,0.06);
+
+.posts-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.pstat {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 14px;
+  padding: 18px 20px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  transition: transform 0.2s;
+  &:hover { transform: translateY(-2px); }
+
+  .pstat-icon { font-size: 22px; flex-shrink: 0; }
+  .pstat-val { font-size: 20px; font-weight: 800; margin-bottom: 2px; }
+  .pstat-lbl { font-size: 12px; color: $text3; }
+}
+
+.posts-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.type-filters {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 99px;
+  border: 1px solid $border;
+  background: $surface;
+  color: $text2;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  &.active, &:hover { background: $accent; color: white; border-color: $accent; }
+}
+
+.view-toggle {
+  display: flex;
+  border: 1px solid $border;
+  border-radius: 8px;
+  overflow: hidden;
+  button {
+    padding: 8px 14px;
+    border: none;
+    background: $surface;
+    color: $text2;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.15s;
+    &.active { background: $accent; color: white; }
+    &:hover:not(.active) { background: $surface2; }
+  }
+}
+
+.posts-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.post-card {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 14px;
+  padding: 18px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  &:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.07); }
+
+  .post-card-header { display: flex; justify-content: space-between; align-items: center; }
+  .post-plat-info { display: flex; align-items: center; gap: 8px; }
+  .post-plat-name { font-size: 13px; font-weight: 600; }
+  .post-date { font-size: 11px; color: $text3; }
+  .post-text { font-size: 13px; color: $text2; line-height: 1.6; flex: 1; }
+}
+
+.post-metrics {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  .metric {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 12px; color: $text2;
+    i { color: $text3; font-size: 12px; }
+  }
+}
+
+.post-eng-bar {
+  .eng-label { display: flex; justify-content: space-between; font-size: 11px; color: $text3; margin-bottom: 4px; }
+  .eng-val { font-weight: 600; color: $accent; &.high { color: #f43f5e; } }
+  .eng-bg { height: 4px; background: rgba(0,0,0,0.06); border-radius: 99px; overflow: hidden; }
+  .eng-fill { height: 100%; border-radius: 99px; transition: width 0.5s ease; }
+}
+
+.empty-state {
+  text-align: center; padding: 60px 20px;
+  i { font-size: 48px; color: $text3; display: block; margin-bottom: 14px; }
+  p { color: $text3; font-size: 14px; }
+}
+
+.dark {
+  .pstat, .post-card {
+    background: $dark-surface;
+    border-color: $dark-border;
+    .pstat-val, .post-plat-name { color: #f1f5f9; }
+    .post-text { color: #94a3b8; }
+  }
+  .filter-btn {
+    background: $dark-surface; border-color: $dark-border; color: #94a3b8;
+    &.active, &:hover { background: $accent; color: white; border-color: $accent; }
+  }
+  .view-toggle {
+    border-color: $dark-border;
+    button { background: $dark-surface; color: #94a3b8;
+      &.active { background: $accent; color: white; }
+      &:hover:not(.active) { background: $dark-surface2; }
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .posts-grid { grid-template-columns: repeat(2, 1fr); }
+  .posts-stats { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .posts-grid { grid-template-columns: 1fr; }
+  .posts-stats { grid-template-columns: 1fr 1fr; }
+}

@@ -1,0 +1,355 @@
+<div class="app" [class.dark]="darkMode">
+  <app-sidebar [darkMode]="darkMode"></app-sidebar>
+  <main class="main">
+    <app-topbar pageTitle="Paramètres" pageSubtitle="Configuration de votre compte"
+      [darkMode]="darkMode" [showFilters]="false"
+      (darkModeChange)="onDarkModeChange($event)">
+    </app-topbar>
+
+    <div class="content">
+
+      <!-- Toast -->
+      <div class="toast" [class.show]="saved">
+        <i class="fa-solid fa-circle-check"></i> Paramètres sauvegardés !
+      </div>
+
+      <div class="settings-layout">
+
+        <!-- NAV -->
+        <nav class="settings-nav">
+          <button class="snav-item" *ngFor="let s of sections"
+            [class.active]="activeSection === s.id"
+            (click)="activeSection = s.id">
+            <i class="fa-solid {{ s.icon }}"></i> {{ s.label }}
+          </button>
+        </nav>
+
+        <!-- CONTENU -->
+        <div class="settings-content">
+
+          <!-- ══ PROFIL ══ -->
+          <ng-container *ngIf="activeSection === 'profil'">
+            <div class="set-header">
+              <i class="fa-solid fa-user set-header-icon" style="color:#6366f1"></i>
+              <div><h2>Profil</h2><p>Informations de votre compte</p></div>
+            </div>
+
+            <!-- INPUT FILE CACHÉ -->
+            <input
+              #fileInput
+              type="file"
+              accept="image/*"
+              style="display:none"
+              (change)="onPhotoSelected($event)"
+            />
+
+            <!-- AVATAR SECTION -->
+            <div class="avatar-section">
+              <div class="avatar-wrap">
+                <!-- Photo chargée -->
+                <img
+                  *ngIf="photoUrl"
+                  [src]="photoUrl"
+                  alt="Photo de profil"
+                  class="avatar-img"
+                />
+                <!-- Initiales si pas de photo -->
+                <div class="avatar-circle" *ngIf="!photoUrl">
+                  {{ initials }}
+                </div>
+                <!-- Overlay au survol -->
+                <div class="avatar-overlay" (click)="triggerFileInput()">
+                  <i class="fa-solid fa-camera"></i>
+                </div>
+              </div>
+
+              <div class="avatar-info">
+                <div class="avatar-name">{{ profil.nom }}</div>
+                <div class="avatar-role">{{ profil.role }}</div>
+                <div class="avatar-actions">
+                  <button class="upload-btn" (click)="triggerFileInput()">
+                    <i class="fa-solid fa-upload"></i> Changer la photo
+                  </button>
+                  <button class="remove-btn" *ngIf="photoUrl" (click)="removePhoto()">
+                    <i class="fa-solid fa-trash"></i> Supprimer
+                  </button>
+                </div>
+                <p class="avatar-hint">JPG, PNG ou WEBP · Max 5 Mo</p>
+              </div>
+            </div>
+
+            <div class="setting-group">
+              <div class="group-title"><i class="fa-solid fa-circle-info"></i> Informations générales</div>
+              <div class="setting-item">
+                <label class="setting-label">Nom / Organisation</label>
+                <input class="input-field" [(ngModel)]="profil.nom"/>
+              </div>
+              <div class="setting-item">
+                <label class="setting-label">Email</label>
+                <input class="input-field" type="email" [(ngModel)]="profil.email"/>
+              </div>
+              <div class="setting-item">
+                <label class="setting-label">Téléphone</label>
+                <input class="input-field" [(ngModel)]="profil.telephone"/>
+              </div>
+              <div class="setting-item">
+                <label class="setting-label">Rôle</label>
+                <select class="input-field">
+                  <option>Administrateur</option>
+                  <option>Éditeur</option>
+                  <option>Lecteur</option>
+                </select>
+              </div>
+              <div class="setting-item col">
+                <label class="setting-label">Bio</label>
+                <textarea class="input-field" rows="3" [(ngModel)]="profil.bio"></textarea>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- ══ NOTIFICATIONS ══ -->
+          <ng-container *ngIf="activeSection === 'notifications'">
+            <div class="set-header">
+              <i class="fa-solid fa-bell set-header-icon" style="color:#f59e0b"></i>
+              <div><h2>Notifications</h2><p>Gérez vos alertes et rapports</p></div>
+            </div>
+            <div class="setting-group">
+              <div class="group-title"><i class="fa-solid fa-envelope"></i> Emails</div>
+              <div class="setting-item">
+                <div class="setting-left">
+                  <div class="setting-label">Rapport quotidien</div>
+                  <div class="setting-desc">Résumé des performances chaque matin</div>
+                </div>
+                <label class="toggle"><input type="checkbox" [(ngModel)]="notifs.emailQuotidien"/><span class="slider"></span></label>
+              </div>
+              <div class="setting-item">
+                <div class="setting-left">
+                  <div class="setting-label">Rapport hebdomadaire</div>
+                  <div class="setting-desc">Analyse complète tous les lundis</div>
+                </div>
+                <label class="toggle"><input type="checkbox" [(ngModel)]="notifs.emailHebdo"/><span class="slider"></span></label>
+              </div>
+              <div class="setting-item">
+                <div class="setting-left">
+                  <div class="setting-label">Rapport mensuel</div>
+                  <div class="setting-desc">Bilan mensuel avec comparaison</div>
+                </div>
+                <label class="toggle"><input type="checkbox" [(ngModel)]="notifs.rapportMensuel"/><span class="slider"></span></label>
+              </div>
+            </div>
+            <div class="setting-group">
+              <div class="group-title"><i class="fa-solid fa-bell"></i> Alertes</div>
+              <div class="setting-item">
+                <div class="setting-left">
+                  <div class="setting-label">Alerte baisse d'engagement</div>
+                  <div class="setting-desc">Notifier si l'engagement chute de plus de 20%</div>
+                </div>
+                <label class="toggle"><input type="checkbox" [(ngModel)]="notifs.alerteEngagement"/><span class="slider"></span></label>
+              </div>
+              <div class="setting-item">
+                <div class="setting-left">
+                  <div class="setting-label">Alerte perte de followers</div>
+                  <div class="setting-desc">Notifier en cas de baisse significative</div>
+                </div>
+                <label class="toggle"><input type="checkbox" [(ngModel)]="notifs.alerteFollowers"/><span class="slider"></span></label>
+              </div>
+              <div class="setting-item">
+                <div class="setting-left">
+                  <div class="setting-label">Notifications navigateur</div>
+                  <div class="setting-desc">Alertes push dans le navigateur</div>
+                </div>
+                <label class="toggle"><input type="checkbox" [(ngModel)]="notifs.pushBrowser"/><span class="slider"></span></label>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- ══ PLATEFORMES ══ -->
+          <ng-container *ngIf="activeSection === 'plateformes'">
+            <div class="set-header">
+              <i class="fa-solid fa-plug set-header-icon" style="color:#10b981"></i>
+              <div><h2>Plateformes connectées</h2><p>Gérez vos connexions aux réseaux sociaux</p></div>
+            </div>
+            <div class="plat-cards">
+              <div class="plat-card" *ngFor="let p of plateformes" [class.connected]="p.connected">
+                <div class="plat-card-left">
+                  <div class="plat-card-icon" [style.background]="p.color + '18'">
+                    <i [class]="p.icon" [style.color]="p.color" style="font-size:22px"></i>
+                  </div>
+                  <div>
+                    <div class="plat-card-name">{{ p.name }}</div>
+                    <div class="plat-card-user" *ngIf="p.connected">{{ p.username }}</div>
+                    <div class="plat-card-user" *ngIf="!p.connected" style="color:#f43f5e">Non connecté</div>
+                  </div>
+                </div>
+                <div class="plat-card-right">
+                  <span class="conn-badge" [class.active]="p.connected">
+                    <i class="fa-solid" [class.fa-circle-check]="p.connected" [class.fa-circle-xmark]="!p.connected"></i>
+                    {{ p.connected ? 'Connecté' : 'Déconnecté' }}
+                  </span>
+                  <button class="outline-btn small" (click)="togglePlateforme(p)">
+                    {{ p.connected ? 'Déconnecter' : 'Connecter' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- ══ APPARENCE ══ -->
+          <ng-container *ngIf="activeSection === 'apparence'">
+            <div class="set-header">
+              <i class="fa-solid fa-palette set-header-icon" style="color:#f43f5e"></i>
+              <div><h2>Apparence</h2><p>Personnalisez l'interface</p></div>
+            </div>
+            <div class="setting-group">
+              <div class="group-title"><i class="fa-solid fa-moon"></i> Thème</div>
+              <div class="theme-cards">
+                <div class="theme-card" [class.active]="darkMode" (click)="darkMode = true">
+                  <div class="theme-preview dark-preview">
+                    <div class="prev-sidebar"></div>
+                    <div class="prev-content"><div class="prev-bar"></div><div class="prev-bar short"></div></div>
+                  </div>
+                  <span>Mode sombre</span>
+                  <i class="fa-solid fa-circle-check" *ngIf="darkMode" style="color:#6366f1"></i>
+                </div>
+                <div class="theme-card" [class.active]="!darkMode" (click)="darkMode = false">
+                  <div class="theme-preview light-preview">
+                    <div class="prev-sidebar"></div>
+                    <div class="prev-content"><div class="prev-bar"></div><div class="prev-bar short"></div></div>
+                  </div>
+                  <span>Mode clair</span>
+                  <i class="fa-solid fa-circle-check" *ngIf="!darkMode" style="color:#6366f1"></i>
+                </div>
+              </div>
+            </div>
+            <div class="setting-group">
+              <div class="group-title"><i class="fa-solid fa-globe"></i> Langue et région</div>
+              <div class="setting-item">
+                <label class="setting-label">Langue</label>
+                <select class="input-field" [(ngModel)]="apparence.langue">
+                  <option value="fr">Français</option>
+                  <option value="en">English</option>
+                  <option value="wo">Wolof</option>
+                </select>
+              </div>
+              <div class="setting-item">
+                <label class="setting-label">Fuseau horaire</label>
+                <select class="input-field" [(ngModel)]="apparence.fuseau">
+                  <option value="Africa/Dakar">Africa/Dakar (GMT+0)</option>
+                  <option value="Europe/Paris">Europe/Paris (GMT+1)</option>
+                  <option value="UTC">UTC</option>
+                </select>
+              </div>
+              <div class="setting-item">
+                <label class="setting-label">Format de date</label>
+                <select class="input-field" [(ngModel)]="apparence.formatDate">
+                  <option>DD/MM/YYYY</option>
+                  <option>MM/DD/YYYY</option>
+                  <option>YYYY-MM-DD</option>
+                </select>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- ══ SÉCURITÉ ══ -->
+          <ng-container *ngIf="activeSection === 'securite'">
+            <div class="set-header">
+              <i class="fa-solid fa-shield-halved set-header-icon" style="color:#6366f1"></i>
+              <div><h2>Sécurité</h2><p>Protégez votre compte</p></div>
+            </div>
+            <div class="setting-group">
+              <div class="group-title"><i class="fa-solid fa-key"></i> Mot de passe</div>
+              <div class="setting-item col">
+                <label class="setting-label">Mot de passe actuel</label>
+                <input class="input-field" type="password" placeholder="••••••••"/>
+              </div>
+              <div class="setting-item col">
+                <label class="setting-label">Nouveau mot de passe</label>
+                <input class="input-field" type="password" placeholder="••••••••"/>
+              </div>
+              <div class="setting-item col">
+                <label class="setting-label">Confirmer le nouveau mot de passe</label>
+                <input class="input-field" type="password" placeholder="••••••••"/>
+              </div>
+            </div>
+            <div class="setting-group">
+              <div class="group-title"><i class="fa-solid fa-mobile-screen"></i> Authentification à 2 facteurs</div>
+              <div class="setting-item">
+                <div class="setting-left">
+                  <div class="setting-label">Activer l'A2F</div>
+                  <div class="setting-desc">Sécurisez votre compte avec un code SMS ou une application</div>
+                </div>
+                <label class="toggle"><input type="checkbox"/><span class="slider"></span></label>
+              </div>
+            </div>
+            <div class="setting-group">
+              <div class="group-title"><i class="fa-solid fa-clock-rotate-left"></i> Sessions actives</div>
+              <div class="setting-item">
+                <div class="setting-left">
+                  <div class="setting-label">Chrome – Windows – Dakar</div>
+                  <div class="setting-desc">Session actuelle · Il y a 2 minutes</div>
+                </div>
+                <span class="conn-badge active"><i class="fa-solid fa-circle-check"></i> Actif</span>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- ══ RAPPORTS ══ -->
+          <ng-container *ngIf="activeSection === 'rapports'">
+            <div class="set-header">
+              <i class="fa-solid fa-file-chart-column set-header-icon" style="color:#f59e0b"></i>
+              <div><h2>Rapports automatiques</h2><p>Configurez vos exports et envois</p></div>
+            </div>
+            <div class="setting-group">
+              <div class="group-title"><i class="fa-solid fa-calendar-check"></i> Planification</div>
+              <div class="setting-item">
+                <label class="setting-label">Fréquence d'envoi</label>
+                <select class="input-field" [(ngModel)]="rapports.frequence">
+                  <option value="quotidien">Quotidien</option>
+                  <option value="hebdomadaire">Hebdomadaire</option>
+                  <option value="mensuel">Mensuel</option>
+                </select>
+              </div>
+              <div class="setting-item">
+                <label class="setting-label">Format d'export</label>
+                <select class="input-field" [(ngModel)]="rapports.format">
+                  <option value="pdf">PDF</option>
+                  <option value="xlsx">Excel (XLSX)</option>
+                  <option value="csv">CSV</option>
+                </select>
+              </div>
+              <div class="setting-item col">
+                <label class="setting-label">Destinataires</label>
+                <input class="input-field" [(ngModel)]="rapports.destinataires"/>
+              </div>
+            </div>
+            <div class="setting-group">
+              <div class="group-title"><i class="fa-solid fa-list-check"></i> Contenu du rapport</div>
+              <div class="setting-item">
+                <div class="setting-left">
+                  <div class="setting-label">Inclure les graphiques</div>
+                  <div class="setting-desc">Ajouter les visualisations de données</div>
+                </div>
+                <label class="toggle"><input type="checkbox" [(ngModel)]="rapports.inclureGraphiques"/><span class="slider"></span></label>
+              </div>
+              <div class="setting-item">
+                <div class="setting-left">
+                  <div class="setting-label">Inclure les tableaux</div>
+                  <div class="setting-desc">Exporter les données brutes</div>
+                </div>
+                <label class="toggle"><input type="checkbox" [(ngModel)]="rapports.inclureTableaux"/><span class="slider"></span></label>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- SAUVEGARDER -->
+          <div class="save-row">
+            <button class="save-btn" (click)="save()">
+              <i class="fa-solid fa-floppy-disk"></i> Sauvegarder les modifications
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

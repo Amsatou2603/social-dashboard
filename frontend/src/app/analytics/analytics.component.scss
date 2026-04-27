@@ -1,0 +1,86 @@
+$accent: #6366f1;
+$accent2: #f43f5e;
+$border: rgba(0,0,0,0.08);
+$surface: #fff;
+$surface2: #f1f5f9;
+$text2: #475569;
+$text3: #94a3b8;
+$dark-surface: #1a1d27;
+$dark-surface2: #232634;
+$dark-border: rgba(255,255,255,0.06);
+
+// ─── Résumé KPIs ───────────────────────────────────────────
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.summary-card {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  transition: transform 0.2s;
+  &:hover { transform: translateY(-2px); }
+
+  .sum-icon {
+    width: 48px; height: 48px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .sum-value { font-size: 22px; font-weight: 800; margin-bottom: 2px; }
+  .sum-label { font-size: 12px; color: $text3; }
+  .sum-plat { font-size: 11px; color: #64748b; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+}
+
+// ─── Layout graphiques ─────────────────────────────────────
+.an-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.an-card {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 20px;
+
+  .an-card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+    h3 { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  }
+}
+
+.badge-period {
+  background: rgba($accent, 0.1);
+  color: $accent;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+// ─── Dark ──────────────────────────────────────────────────
+.dark {
+  .summary-card, .an-card {
+    background: $dark-surface;
+    border-color: $dark-border;
+    .sum-label { color: #64748b; }
+    .sum-value { color: #f1f5f9; }
+    h3 { color: #f1f5f9; }
+  }
+}
+
+@media (max-width: 1100px) {
+  .summary-grid { grid-template-columns: repeat(2, 1fr); }
+  .an-row { grid-template-columns: 1fr; }
+}

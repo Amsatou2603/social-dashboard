@@ -1,0 +1,28 @@
+#generer le contenu de .gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+*.sqlite3
+venv/
+env/
+.venv/
+staticfiles/
+
+# Node
+node_modules/
+dist/
+.angular/
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp

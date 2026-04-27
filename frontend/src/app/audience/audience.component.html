@@ -1,0 +1,110 @@
+<div class="app" [class.dark]="darkMode">
+  <app-sidebar [darkMode]="darkMode"></app-sidebar>
+  <main class="main">
+    <app-topbar pageTitle="Audience" pageSubtitle="Données démographiques et comportement"
+      [darkMode]="darkMode" [showFilters]="true"
+      [selectedPlatform]="selectedPlatform" [selectedDays]="selectedDays"
+      (darkModeChange)="onDarkModeChange($event)"
+      (platformChange)="onPlatformChange($event)"
+      (daysChange)="onDaysChange($event)">
+    </app-topbar>
+
+    <div class="content">
+
+      <!-- KPI -->
+      <div class="aud-kpis">
+        <div class="aud-kpi">
+          <div class="aud-kpi-icon" style="background:rgba(99,102,241,0.12)">
+            <i class="fa-solid fa-users" style="color:#6366f1"></i>
+          </div>
+          <div><div class="aud-kpi-val">{{ fmt(totalFollowers) }}</div><div class="aud-kpi-lbl">Total Abonnés</div></div>
+        </div>
+        <div class="aud-kpi">
+          <div class="aud-kpi-icon" style="background:rgba(16,185,129,0.12)">
+            <i class="fa-solid fa-user-plus" style="color:#10b981"></i>
+          </div>
+          <div><div class="aud-kpi-val">+{{ fmt(newFollowers) }}</div><div class="aud-kpi-lbl">Nouveaux abonnés (période)</div></div>
+        </div>
+        <div class="aud-kpi">
+          <div class="aud-kpi-icon" style="background:rgba(245,158,11,0.12)">
+            <i class="fa-solid fa-earth-africa" style="color:#f59e0b"></i>
+          </div>
+          <div><div class="aud-kpi-val">{{ countries.length }}</div><div class="aud-kpi-lbl">Pays représentés</div></div>
+        </div>
+        <div class="aud-kpi">
+          <div class="aud-kpi-icon" style="background:rgba(244,63,94,0.12)">
+            <i class="fa-solid fa-venus-mars" style="color:#f43f5e"></i>
+          </div>
+          <div><div class="aud-kpi-val">48% / 45%</div><div class="aud-kpi-lbl">Femmes / Hommes</div></div>
+        </div>
+      </div>
+
+      <!-- CROISSANCE + GENRE -->
+      <div class="aud-row">
+        <div class="aud-card large">
+          <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> Croissance des abonnés</h3>
+          <canvas baseChart [data]="growthChart" [options]="chartOptions" type="line"></canvas>
+        </div>
+        <div class="aud-card">
+          <h3 class="card-title"><i class="fa-solid fa-venus-mars"></i> Répartition par genre</h3>
+          <canvas baseChart [data]="genderData" [options]="doughnutOptions" type="doughnut"></canvas>
+        </div>
+      </div>
+
+      <!-- ÂGE + PAYS -->
+      <div class="aud-row">
+        <div class="aud-card">
+          <h3 class="card-title"><i class="fa-solid fa-cake-candles"></i> Tranches d'âge</h3>
+          <div class="age-bars">
+            <div class="demo-bar" *ngFor="let a of ageData">
+              <div class="demo-label"><span>{{ a.label }}</span><span>{{ a.pct }}%</span></div>
+              <div class="bar-bg"><div class="bar-fill" [style.width]="a.pct + '%'"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="aud-card">
+          <h3 class="card-title"><i class="fa-solid fa-earth-africa"></i> Répartition géographique</h3>
+          <div class="countries">
+            <div class="country-row" *ngFor="let c of countries">
+              <span class="flag">{{ c.flag }}</span>
+              <div class="country-info">
+                <div class="country-name">{{ c.name }}</div>
+                <div class="country-bar"><div class="country-fill" [style.width]="c.pct + '%'"></div></div>
+              </div>
+              <span class="country-pct">{{ c.pct }}%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HEATMAP ACTIVITÉ -->
+      <div class="aud-card full">
+        <h3 class="card-title"><i class="fa-solid fa-clock"></i> Meilleurs moments pour publier</h3>
+        <p class="card-sub">Activité de votre audience par heure et par jour de la semaine</p>
+        <div class="heatmap-wrap">
+          <div class="heatmap-hours">
+            <div class="h-spacer"></div>
+            <span *ngFor="let h of hours" class="h-label">{{ h }}</span>
+          </div>
+          <div class="heatmap-body">
+            <div class="heatmap-row" *ngFor="let row of activityMatrix; let di = index">
+              <span class="day-label">{{ days[di] }}</span>
+              <div class="heat-cell" *ngFor="let level of row" [class]="'heat-cell ' + level"></div>
+            </div>
+          </div>
+          <div class="heatmap-legend">
+            <span style="color:#94a3b8;font-size:11px">Moins actif</span>
+            <div class="legend-cells">
+              <div class="heat-cell low"></div>
+              <div class="heat-cell mid"></div>
+              <div class="heat-cell high"></div>
+            </div>
+            <span style="color:#94a3b8;font-size:11px">Plus actif</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
