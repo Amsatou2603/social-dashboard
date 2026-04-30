@@ -108,12 +108,14 @@ export class ParametresComponent implements OnInit {
     const reader = new FileReader();
     reader.onload = (e) => {
       this.photoUrl = e.target?.result as string;
+      localStorage.setItem('userPhoto', this.photoUrl);
     };
     reader.readAsDataURL(file);
   }
 
   removePhoto() {
     this.photoUrl = null;
+    localStorage.removeItem('userPhoto');
     if (this.fileInput?.nativeElement) {
       this.fileInput.nativeElement.value = '';
     }
