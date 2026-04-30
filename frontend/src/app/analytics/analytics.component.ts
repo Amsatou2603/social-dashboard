@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { BaseChartDirective } from 'ng2-charts';
+import { NgChartsModule } from 'ng2-charts';
 import { Chart, registerables } from 'chart.js';
 import { ApiService } from '../services/api.service';
 import { SidebarComponent } from '../shared/sidebar.component';
@@ -13,7 +13,7 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-analytics',
   standalone: true,
-  imports: [CommonModule, FormsModule, BaseChartDirective, SidebarComponent, TopbarComponent],
+  imports: [CommonModule, FormsModule, NgChartsModule, SidebarComponent, TopbarComponent],
   templateUrl: './analytics.component.html',
   styleUrls: ['./analytics.component.scss']
 })
