@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8000/api'
+  apiUrl: 'https://social-dashboard-api-didf.onrender.com/api/kpi/'
 };
