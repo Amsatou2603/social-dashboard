@@ -134,6 +134,7 @@ export class ParametresComponent implements OnInit {
   togglePlateforme(p: any) { p.connected = !p.connected; }
 
   save() {
+    localStorage.setItem('userPhoto', JSON.stringify(this.photoUrl));
     this.saved = true;
     setTimeout(() => this.saved = false, 2500);
   }
