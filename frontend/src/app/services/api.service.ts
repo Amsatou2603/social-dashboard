@@ -64,36 +64,46 @@ export class ApiService {
   }
 
   getKpi(platform = 'all', days = 30): Observable<KpiResponse> {
-    return this.http.get<KpiResponse>(`${this.base}/kpi/`, { params: this.params(platform, days) });
+    return this.http.get<KpiResponse>(`${this.base}/api/kpi/`, {
+      params: this.params(platform, days)
+    });
   }
 
   getFollowersChart(platform = 'all', days = 30): Observable<ChartData> {
-    return this.http.get<ChartData>(`${this.base}/charts/followers/`, { params: this.params(platform, days) });
+    return this.http.get<ChartData>(`${this.base}/api/charts/followers/`, {
+      params: this.params(platform, days)
+    });
   }
 
   getEngagementChart(platform = 'all', days = 30): Observable<ChartData> {
-    return this.http.get<ChartData>(`${this.base}/charts/engagement/`, { params: this.params(platform, days) });
+    return this.http.get<ChartData>(`${this.base}/api/charts/engagement/`, {
+      params: this.params(platform, days)
+    });
   }
 
   getImpressionsChart(platform = 'all', days = 30): Observable<ChartData> {
-    return this.http.get<ChartData>(`${this.base}/charts/impressions/`, { params: this.params(platform, days) });
+    return this.http.get<ChartData>(`${this.base}/api/charts/impressions/`, {
+      params: this.params(platform, days)
+    });
   }
 
   getPlatformShare(): Observable<ChartData> {
-    return this.http.get<ChartData>(`${this.base}/charts/platform-share/`);
+    return this.http.get<ChartData>(`${this.base}/api/charts/platform-share/`);
   }
 
   getPosts(platform = 'all', days = 30): Observable<Post[]> {
-    return this.http.get<Post[]>(`${this.base}/posts/`, { params: this.params(platform, days) });
+    return this.http.get<Post[]>(`${this.base}/api/posts/`, {
+      params: this.params(platform, days)
+    });
   }
 
   getTopPosts(platform = 'all'): Observable<Post[]> {
-    return this.http.get<Post[]>(`${this.base}/posts/top/`, {
+    return this.http.get<Post[]>(`${this.base}/api/posts/top/`, {
       params: new HttpParams().set('platform', platform)
     });
   }
 
   getGlobalStats(): Observable<GlobalStats> {
-    return this.http.get<GlobalStats>(`${this.base}/stats/`);
+    return this.http.get<GlobalStats>(`${this.base}/api/stats/`);
   }
 }
