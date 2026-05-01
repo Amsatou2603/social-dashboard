@@ -11,7 +11,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-dev-key-change-in-pro
 
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['DATABASE_URL', 'https://social-dashboard-api-didf.onrender.com/api/kpi/']
+ALLOWED_HOSTS = ['DATABASE_URL', 'localhost', 'https://social-dashboard-api-didf.onrender.com/api/kpi/']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
